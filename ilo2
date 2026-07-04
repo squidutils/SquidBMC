@@ -8,4 +8,17 @@ IP="${1:?usage: ilo2 <ilo-ip>}"
 export DISPLAY="${DISPLAY:-:1}"
 PROFILE=/root/.ff52-ilo
 mkdir -p "$PROFILE"
+
+# Open maximized (fills the display). A fresh profile otherwise starts at a
+# small default size, leaving black borders around the window in the noVNC view.
+[ -f "$PROFILE/xulstore.json" ] || printf '%s' \
+  '{"chrome://browser/content/browser.xul":{"main-window":{"screenX":"0","screenY":"0","width":"1280","height":"1024","sizemode":"maximized"}}}' \
+  > "$PROFILE/xulstore.json"
+
+# No certificate exception is baked in: every iLO2 has its own self-signed
+# cert. On first launch accept it once on Firefox's warning page (Advanced ->
+# Add Exception, "Permanently store"); Firefox writes cert_override.txt into
+# this profile, which lives on the ilo-profile volume and survives rebuilds.
+# If the iLO's certificate changes, delete that file and accept once again.
+
 exec /opt/firefox52/firefox --no-remote --profile "$PROFILE" "https://$IP"
