@@ -15,8 +15,14 @@ mkdir -p "$PROFILE"
   '{"chrome://browser/content/browser.xul":{"main-window":{"screenX":"0","screenY":"0","width":"1280","height":"1024","sizemode":"maximized"}}}' \
   > "$PROFILE/xulstore.json"
 
-# Kiosk: this browser only ever talks to the BMC, so hide all chrome (URL bar,
-# tabs, menu) and disable the session/crash-restore nag. Rewritten each launch.
+# No certificate exception is baked in: every iDRAC6 has its own self-signed
+# cert. On first launch accept it once on Firefox's warning page (Advanced ->
+# Add Exception, "Permanently store"); Firefox writes cert_override.txt into
+# this profile, which lives on the idrac-profile volume and survives rebuilds.
+# If the iDRAC's certificate changes, delete that file and accept once again.
+
+# Kiosk + no session nag + disable DHE (iDRAC's DHE handshake is ~4s vs ~1.5s on
+# RSA; force RSA key exchange). Rewritten each launch.
 mkdir -p "$PROFILE/chrome"
 printf '%s\n' \
   '#nav-bar, #TabsToolbar, #toolbar-menubar, #PersonalToolbar { visibility: collapse !important; }' \
@@ -26,6 +32,12 @@ printf '%s\n' \
   'user_pref("browser.sessionstore.resume_from_crash", false);' \
   'user_pref("browser.sessionstore.max_resumed_crashes", 0);' \
   'user_pref("toolkit.startup.max_resumed_crashes", -1);' \
+  'user_pref("security.ssl3.rsa_aes_128_sha", true);' \
+  'user_pref("security.ssl3.rsa_aes_256_sha", true);' \
+  'user_pref("security.ssl3.dhe_rsa_aes_128_sha", false);' \
+  'user_pref("security.ssl3.dhe_rsa_aes_256_sha", false);' \
+  'user_pref("security.ssl3.dhe_rsa_aes_128_gcm_sha256", false);' \
+  'user_pref("security.ssl3.dhe_rsa_aes_256_gcm_sha384", false);' \
   > "$PROFILE/user.js"
 
 exec firefox-esr --no-remote --profile "$PROFILE" "https://$IP"
