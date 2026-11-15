@@ -93,12 +93,16 @@ example `proxy_read_timeout 86400s;`). See
 
 ### "Your connection is not secure" in the console browser
 
-The launch scripts pre-seed a certificate exception for a known BMC
-certificate. Your BMC's self-signed certificate will usually be different, so
-accept the exception once, using the **Advanced** button on Firefox's warning
-page. It is
-stored in the Firefox profile volume (`ilo-profile` or `idrac-profile`) and
-kept across rebuilds.
+Expected the first time you open the iLO2 console: the image does not ship a
+certificate exception for any particular iLO2, because each one has its own
+self-signed certificate. Accept it once with **Advanced** -> **Add Exception**
+(leave "Permanently store this exception" ticked). Firefox saves it in the
+profile on the `ilo-profile` volume, so it is kept across restarts and
+rebuilds.
+
+The iDRAC6 script still pre-seeds an exception for one Dell default
+certificate. Your iDRAC6's certificate will usually be different, so accept it
+once in the same way; it is stored on the `idrac-profile` volume.
 
 If the BMC's certificate changes later and the old exception gets in the way,
 delete the stored overrides and accept the new certificate once:
@@ -112,8 +116,7 @@ Then click **Reload** on the console page.
 
 ### Java asks "The digital signature cannot be verified" or about running the application
 
-The image trusts the HPE iLO2 and Dell iDRAC6 signing certificates it was
-built with. If your firmware's applet is signed with a different certificate,
+The image trusts the HPE iLO2 applet signing certificate it was built with. If your firmware's applet is signed with a different certificate,
 tick "Always trust content from this publisher" and run it once. The decision
 is saved on the `icedtea-trust` volume and kept across rebuilds. To build it
 into the image, see [Development](development.md#adding-a-bmcs-java-signing-certificate-to-the-image).

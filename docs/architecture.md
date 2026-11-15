@@ -127,11 +127,15 @@ The awkward details, written down so a rebuild never turns into archaeology:
   browsers. Both also disable the DHE ciphers to force RSA key exchange; for
   the iDRAC6 the reason given is that its DHE handshake takes about 4 seconds
   against about 1.5 seconds with RSA.
-- **Certificate exceptions are pre-seeded**: each launch script writes a
-  `cert_override.txt` into its Firefox profile if none exists, for a known BMC
-  certificate. The profiles are on volumes, so a certificate exception you
-  accept once is kept across rebuilds. If a BMC's certificate changes, delete
-  that file and accept the certificate once to regenerate it.
+- **Certificate exceptions are accepted once and persisted**: the image ships
+  no certificate exception for any particular iLO2. On first launch you accept
+  the BMC's self-signed certificate on Firefox's warning page and Firefox
+  writes `cert_override.txt` into its profile. The profiles are on volumes
+  (`ilo-profile`, `idrac-profile`), so the exception is kept across rebuilds.
+  The `idrac6` script still writes an override for one Dell default
+  certificate if the profile has none; other iDRAC6s are accepted once in the
+  same way. If a BMC's certificate changes, delete that file and accept the
+  certificate once to regenerate it.
 - **Java security prompts are pre-cleared** in the engine image so consoles
   launch without dialogs: `deployment.properties` sets
   `security.level=ALLOW_UNSIGNED`, `manifest.attributes.check=NONE` (the "uses
@@ -139,8 +143,8 @@ The awkward details, written down so a rebuild never turns into archaeology:
   `itw.ignorecertissues=true` (the HTTPS "certificate cannot be verified"
   dialog), and turns off CRL/OCSP checks and the expired and not-in-CA warnings.
   A pre-seeded IcedTea trust store (`trusted.certs`, JKS, captured after
-  ticking "Always trust this publisher" for the HPE iLO2 and Dell iDRAC6 signing
-  certificates) is baked in, and the runtime `security/` directory is on the
+  ticking "Always trust this publisher" for HPE's iLO2 applet code-signing
+  certificate) is baked in, and the runtime `security/` directory is on the
   `icedtea-trust` volume so new trust decisions persist across rebuilds.
 - **noVNC 1.4** is served by Sinatra. The WebSocket proxy uses
   **faye-websocket** in `rack.hijack` mode under **puma** with a raw `TCPSocket`

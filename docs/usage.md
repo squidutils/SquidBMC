@@ -65,6 +65,12 @@ The Java security prompts (unverified signature, HTTPS certificate, "uses
 resources from remote locations") are suppressed in advance in the engine
 image, so the console starts without clicking through dialogs.
 
+The browser's own "Your connection is not secure" page is different: the first
+time you open a console, accept your BMC's self-signed certificate once
+(**Advanced** -> **Add Exception**). The exception is kept in the console's
+Firefox profile volume, so you are not asked again after a restart or rebuild.
+See [Troubleshooting](troubleshooting.md#your-connection-is-not-secure-in-the-console-browser).
+
 Buttons under the console:
 
 - **Reload** - closes and restarts the browser on the engine, then reconnects.

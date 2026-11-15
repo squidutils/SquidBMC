@@ -132,12 +132,14 @@ RUN tar xjf /tmp/ff52.tar.bz2 -C /opt && rm /tmp/ff52.tar.bz2 && \
       'lockPref("browser.shell.checkDefaultBrowser", false);' \
       > /opt/firefox52/firefox.cfg
 
-# Pre-seed the applet/JNLP signing certs (HPE iLO2 + Dell iDRAC6) so the
+# Pre-seed the applet signing cert (HPE's iLO2 code-signing cert) so the
 # "digital signature cannot be verified - Run?" dialog never appears, even in
 # a fresh container. Keystore captured from a live container after ticking
 # "Always trust content from this publisher" (JKS, default password changeit).
 # To add a new BMC's cert: tick the box once in its dialog, then
 #   docker cp bmc-console:/root/.config/icedtea-web/security/trusted.certs .
+# and remove any entry for your own BMC's self-signed HTTPS cert before
+# committing (see docs/development.md).
 COPY trusted.certs /root/.config/icedtea-web/security/trusted.certs
 
 COPY start.sh /usr/local/bin/start.sh

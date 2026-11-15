@@ -97,8 +97,8 @@ A plan for automated OWASP ZAP scanning is in [ZAP.md](ZAP.md).
 
 ## Adding a BMC's Java signing certificate to the image
 
-The image ships with trust for the HPE iLO2 and Dell iDRAC6 applet signing
-certificates. To bake in another one:
+The image ships with trust for HPE's iLO2 applet code-signing certificate. To
+bake in another one:
 
 1. Open the console, tick "Always trust content from this publisher" in the
    Java dialog once, and run the console.
@@ -108,8 +108,19 @@ certificates. To bake in another one:
    docker cp bmc-console:/root/.config/icedtea-web/security/trusted.certs .
    ```
 
-3. Commit the new `trusted.certs` and rebuild the `console` image. It is a JKS
-   keystore with the default password `changeit`.
+3. List the entries and delete any that is not a vendor code-signing
+   certificate. The live store can also pick up your own BMC's self-signed
+   HTTPS certificate, whose subject is that BMC's hostname, and that must not
+   be committed. It is a JKS keystore with the default password `changeit`:
+
+   ```bash
+   docker cp trusted.certs bmc-console:/tmp/trusted.certs
+   docker exec bmc-console keytool -list -v -keystore /tmp/trusted.certs -storepass changeit
+   docker exec bmc-console keytool -delete -alias <alias> -keystore /tmp/trusted.certs -storepass changeit
+   docker cp bmc-console:/tmp/trusted.certs .
+   ```
+
+4. Commit the new `trusted.certs` and rebuild the `console` image.
 
 Existing installs keep their own trust store on the `icedtea-trust` volume; the
 image copy is used only when that volume is first created.
