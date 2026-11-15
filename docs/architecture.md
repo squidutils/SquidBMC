@@ -128,13 +128,11 @@ The awkward details, written down so a rebuild never turns into archaeology:
   the iDRAC6 the reason given is that its DHE handshake takes about 4 seconds
   against about 1.5 seconds with RSA.
 - **Certificate exceptions are accepted once and persisted**: the image ships
-  no certificate exception for any particular iLO2. On first launch you accept
-  the BMC's self-signed certificate on Firefox's warning page and Firefox
-  writes `cert_override.txt` into its profile. The profiles are on volumes
-  (`ilo-profile`, `idrac-profile`), so the exception is kept across rebuilds.
-  The `idrac6` script still writes an override for one Dell default
-  certificate if the profile has none; other iDRAC6s are accepted once in the
-  same way. If a BMC's certificate changes, delete that file and accept the
+  no certificate exception for any particular iLO2 or iDRAC6. On first launch
+  you accept the BMC's self-signed certificate on Firefox's warning page and
+  Firefox writes `cert_override.txt` into its profile. The profiles are on
+  volumes (`ilo-profile`, `idrac-profile`), so the exception is kept across
+  rebuilds. If a BMC's certificate changes, delete that file and accept the
   certificate once to regenerate it.
 - **Java security prompts are pre-cleared** in the engine image so consoles
   launch without dialogs: `deployment.properties` sets

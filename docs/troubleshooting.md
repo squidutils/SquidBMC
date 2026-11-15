@@ -93,16 +93,12 @@ example `proxy_read_timeout 86400s;`). See
 
 ### "Your connection is not secure" in the console browser
 
-Expected the first time you open the iLO2 console: the image does not ship a
-certificate exception for any particular iLO2, because each one has its own
-self-signed certificate. Accept it once with **Advanced** -> **Add Exception**
-(leave "Permanently store this exception" ticked). Firefox saves it in the
-profile on the `ilo-profile` volume, so it is kept across restarts and
-rebuilds.
-
-The iDRAC6 script still pre-seeds an exception for one Dell default
-certificate. Your iDRAC6's certificate will usually be different, so accept it
-once in the same way; it is stored on the `idrac-profile` volume.
+Expected the first time you open an iLO2 or iDRAC6 console: the image does not
+ship a certificate exception for any particular BMC, because each one has its
+own self-signed certificate. Accept it once with **Advanced** -> **Add
+Exception** (leave "Permanently store this exception" ticked). Firefox saves it
+in the console's profile, on the `ilo-profile` (iLO2) or `idrac-profile`
+(iDRAC6) volume, so it is kept across restarts and rebuilds.
 
 If the BMC's certificate changes later and the old exception gets in the way,
 delete the stored overrides and accept the new certificate once:
