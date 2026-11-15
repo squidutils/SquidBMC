@@ -24,7 +24,7 @@
 - `web/views/` - ERB templates.
 - `web/spec/` - RSpec tests.
 - `bmcfleet.sh` - command-line IPMI summary (see
-  [Configuration](configuration.md#bmcconfexample-and-bmcfleetsh)).
+  [Configuration](configuration.md#bmcfleetsh)).
 - `isos/` - default virtual media folder.
 
 ## Making a change

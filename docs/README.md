@@ -8,7 +8,7 @@ If something does not work, go to [Troubleshooting](troubleshooting.md).
 - [Installation](installation.md) - requirements, Docker Compose, Portainer Git
   stacks, upgrading, backing up and restoring the volumes.
 - [Configuration](configuration.md) - every `.env` variable, how the server
-  list is seeded and stored, `bmc.conf.example` and `bmcfleet.sh`.
+  list is seeded and stored, and `bmcfleet.sh`.
 - [Using SquidBMC](usage.md) - the dashboard, power actions, adding servers,
   the graphical KVM consoles and the text (serial) consoles.
 - [Virtual media](virtual-media.md) - making ISO files available to the

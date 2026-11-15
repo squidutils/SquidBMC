@@ -121,14 +121,11 @@ Each entry holds a label, the BMC IP, username, password, vendor (`hp`, `dell`
 or `other`) and the fan maximum. Passwords are stored in plaintext; see
 [SECURITY.md](../SECURITY.md#credential-handling).
 
-## `bmc.conf.example` and `bmcfleet.sh`
+## `bmcfleet.sh`
 
-- `bmc.conf.example` shows a simple list format, one BMC per line:
-  `label ip user pass`. Copy it to `bmc.conf` (gitignored) if you want such a
-  list. Nothing in the web app or `bmcfleet.sh` reads `bmc.conf` at present.
-- `bmcfleet.sh` is a small command-line version of the dashboard. It reads the
-  `ILO_*` and `IDRAC_*` values from a `.env` file (default `./.env`, or the path
-  given as the first argument) and prints one line per node: power state,
-  ambient temperature, fan count and power draw. It runs `ipmitool` on the
-  machine you run it on, so it needs `ipmitool` installed there. It does not
-  pass `-C`, so it uses `ipmitool`'s cipher suite discovery.
+`bmcfleet.sh` is a small command-line version of the dashboard. It reads the
+`ILO_*` and `IDRAC_*` values from a `.env` file (default `./.env`, or the path
+given as the first argument) and prints one line per node: power state,
+ambient temperature, fan count and power draw. It runs `ipmitool` on the
+machine you run it on, so it needs `ipmitool` installed there. It does not
+pass `-C`, so it uses `ipmitool`'s cipher suite discovery.
