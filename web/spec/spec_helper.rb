@@ -1,20 +1,23 @@
 ENV['RACK_ENV'] = 'test'
-# Test auth config (must be set before app.rb reads them).
-ENV['SESSION_SECRET']       ||= 'x' * 64
-ENV['PLATFORM_USER']        ||= 'tester'
-ENV['PLATFORM_PASS']        ||= 'testpass'
-ENV['GITHUB_ALLOWED_USERS'] ||= 'Arawn-Davies'
-ENV['GITHUB_CLIENT_ID']     ||= 'testid'
-ENV['GITHUB_CLIENT_SECRET'] ||= 'testsecret'
-ENV['OIDC_ISSUER']          ||= 'https://idp.example.test/'
-ENV['OIDC_CLIENT_ID']       ||= 'squidbmc'
-ENV['OIDC_CLIENT_SECRET']   ||= 'oidcsecret'
-ENV['OIDC_REDIRECT_URI']    ||= 'https://bmc.example.test/auth/oidc/callback'
-ENV['OIDC_ALLOWED_USERS']   ||= 'ops@example.test'
-ENV['OIDC_ALLOWED_GROUPS']  ||= 'BMC Admins'
-
+# Test auth config (must be set before app.rb reads them). Applied when the
+# variable is unset OR empty: docker compose sets every variable it maps to ''
+# when it is missing from .env, and `||=` would keep those empty strings.
 require 'tmpdir'
-ENV['SERVERS_PATH'] ||= File.join(Dir.tmpdir, 'squidbmc_servers_test.json')
+{
+  'SESSION_SECRET'       => 'x' * 64,
+  'PLATFORM_USER'        => 'tester',
+  'PLATFORM_PASS'        => 'testpass',
+  'GITHUB_ALLOWED_USERS' => 'Arawn-Davies',
+  'GITHUB_CLIENT_ID'     => 'testid',
+  'GITHUB_CLIENT_SECRET' => 'testsecret',
+  'OIDC_ISSUER'          => 'https://idp.example.test/',
+  'OIDC_CLIENT_ID'       => 'squidbmc',
+  'OIDC_CLIENT_SECRET'   => 'oidcsecret',
+  'OIDC_REDIRECT_URI'    => 'https://bmc.example.test/auth/oidc/callback',
+  'OIDC_ALLOWED_USERS'   => 'ops@example.test',
+  'OIDC_ALLOWED_GROUPS'  => 'BMC Admins',
+  'SERVERS_PATH'         => File.join(Dir.tmpdir, 'squidbmc_servers_test.json')
+}.each { |k, v| ENV[k] = v if ENV[k].to_s.empty? }
 
 require 'rack/test'
 require 'omniauth'

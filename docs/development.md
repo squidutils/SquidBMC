@@ -50,11 +50,19 @@ docker run --rm squidbmc-web-test bundle exec rspec
 This is what CI does in effect (35 examples, 0 failures at the time of
 writing). The specs are copied into the image, so rebuild after changing them.
 
-Running the specs inside the live container (`docker exec bmc-web bundle exec
-rspec`) or through `docker compose run web` is not reliable. Compose sets every
-variable the app reads, to an empty string if it is not in `.env`, and
-`spec_helper.rb` only fills in test values for variables that are not set at
-all. With empty or real values in the environment, most examples fail.
+The specs also run inside the Compose environment:
+
+```bash
+docker exec bmc-web bundle exec rspec
+docker compose run --rm web bundle exec rspec
+```
+
+Compose sets every variable the app reads, to an empty string if it is not in
+`.env`. `spec_helper.rb` fills in its test values for any of those variables
+that is unset or empty, so this works with an empty `.env`. A variable that has
+a real value in `.env` is left as it is and can make examples fail (for
+example a real `PLATFORM_USER`, or a `GITHUB_ALLOWED_USERS` list without the
+test login); use the throwaway container above for a clean run.
 
 RSpec + Rack::Test cover:
 
