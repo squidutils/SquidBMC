@@ -1,12 +1,13 @@
 # SquidBMC - implementation plan (next up)
 
-Two features to build next. No em-dashes anywhere.
+The features planned next, plus the operator recipe for serial consoles.
 
 ## Resuming work
 1. Start Docker, then from the repository root `docker compose up -d` (add
    `--build` only if code changed).
 2. Verify: `curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8088/`
-   should be 200; `docker exec bmc-web bundle exec rspec` should be 8/8.
+   should print 200 (or 302 to `/login` once a login is configured), and the
+   specs should pass (see [Development](development.md#running-the-tests)).
 3. Open http://localhost:8088/ in a browser.
 
 ---
@@ -143,11 +144,12 @@ correct. Make the parsing vendor-aware and fall back to `n/a` where a vendor
 genuinely does not expose a metric over IPMI.
 
 ### Step 0: learn the real HP names (diagnostic first, do NOT guess)
-Run against the iLO and capture actual sensor names before coding:
+Run against the iLO and capture actual sensor names before coding (the
+password is read from the container's environment, not the command line):
 ```
-docker exec bmc-web ipmitool -I lanplus -H 192.0.2.245 -U admin -P "$ILO_PASS" sdr
-docker exec bmc-web ipmitool -I lanplus -H 192.0.2.245 -U admin -P "$ILO_PASS" sdr type temperature
-docker exec bmc-web ipmitool -I lanplus -H 192.0.2.245 -U admin -P "$ILO_PASS" sdr type fan
+docker exec bmc-web sh -c 'IPMI_PASSWORD="$ILO_PASS" ipmitool -I lanplus -H "$ILO_IP" -U "$ILO_USER" -E -C 3 sdr'
+docker exec bmc-web sh -c 'IPMI_PASSWORD="$ILO_PASS" ipmitool -I lanplus -H "$ILO_IP" -U "$ILO_USER" -E -C 3 sdr type temperature'
+docker exec bmc-web sh -c 'IPMI_PASSWORD="$ILO_PASS" ipmitool -I lanplus -H "$ILO_IP" -U "$ILO_USER" -E -C 3 sdr type fan'
 ```
 Note: some iLO2 firmware does not expose fan RPM or wattage over IPMI at all
 (only via the web UI). If so, show `n/a`, do not fake a 0.
@@ -200,11 +202,11 @@ cookie and the browser navigates in.
 ```
 
 ### Investigation needed first (curl is blocked by the dead TLS)
-- **iLO2 (192.0.2.245):** open the login page in the engine's FF52, View Source,
+- **iLO2 (`ILO_IP`):** open the login page in the engine's FF52, View Source,
   and read the `<form>` action + the username/password `<input name=...>`. iLO2
   firmware varies; if the login is JS-built with a nonce/challenge (not a plain
   form POST) a static form will not work and we fall back to autofill.
-- **iDRAC6 (192.0.2.81):** endpoint is known: `POST /data/login` with
+- **iDRAC6 (`IDRAC_IP`):** endpoint is known: `POST /data/login` with
   `user=<...>&password=<...>`, but it returns XML (`authResult`), not the UI. So:
   submit to `/data/login` in a hidden iframe, then on load set
   `window.location = 'https://<IP>/'` once the session cookie is set.
