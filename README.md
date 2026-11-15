@@ -72,4 +72,4 @@ and HTTPS. The details, including the risks that are accepted on purpose, are in
 
 ## Licence
 
-This repository does not include a licence file yet.
+MIT, see [LICENSE](LICENSE).
