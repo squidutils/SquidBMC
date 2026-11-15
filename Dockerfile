@@ -103,8 +103,8 @@ RUN ln -sfn /usr/lib/jvm/java-8-openjdk-amd64/jre /usr/lib/jvm/java-7-openjdk-am
 # applet (iLO2 embeds the console as an in-browser <applet>, not a JNLP, so
 # javaws can't help - it must run inside an NPAPI-capable browser). Modern
 # firefox-esr dropped NPAPI, hence "no JVM detected". Used ONLY for iLO2.
-# Tarball is fetched host-side (stretch's wget can't do Mozilla's modern TLS)
-# and COPYed in - see .gitignore / README.
+# The tarball is downloaded by the fffetch stage at the top of this file
+# (stretch's wget can't do Mozilla's modern TLS) and COPYed across from it.
 COPY --from=fffetch /firefox-52.9.0esr.tar.bz2 /tmp/ff52.tar.bz2
 RUN tar xjf /tmp/ff52.tar.bz2 -C /opt && rm /tmp/ff52.tar.bz2 && \
     mv /opt/firefox /opt/firefox52 && \
