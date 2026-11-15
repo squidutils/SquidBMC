@@ -24,10 +24,12 @@ RUN printf '%s\n' \
       'deb http://archive.debian.org/debian-security stretch/updates main' \
       > /etc/apt/sources.list
 
+# python (2.7) runs the launch listener, launchd.py. No noVNC/websockify here:
+# the web container serves noVNC and proxies the VNC WebSocket to Xvnc.
 RUN apt-get -o Acquire::Check-Valid-Until=false update && apt-get install -y --no-install-recommends \
       openjdk-8-jre icedtea-netx \
       tigervnc-standalone-server tigervnc-common \
-      novnc websockify \
+      python \
       matchbox-window-manager x11-utils dbus-x11 xdotool \
       firefox-esr \
       ca-certificates wget curl procps nano bzip2 \
@@ -54,14 +56,6 @@ RUN mkdir -p /root/.config/icedtea-web && \
       'deployment.security.itw.ignorecertissues=true' \
       'deployment.manifest.attributes.check=NONE' \
       > /root/.config/icedtea-web/deployment.properties
-
-# --- noVNC client: distro ships 2013-era 0.4 (too old for Firefox), but the
-# distro websockify 0.8 REQUIRES the client send the 'binary' WS sub-protocol,
-# which noVNC >=1.2 dropped. v1.1.0 is the sweet spot: modern enough for
-# current Firefox, still sends 'binary' so websockify 0.8 accepts it.
-RUN mkdir -p /opt/novnc && \
-    wget -qO /tmp/novnc.tgz https://github.com/novnc/noVNC/archive/refs/tags/v1.1.0.tar.gz && \
-    tar xzf /tmp/novnc.tgz -C /opt/novnc --strip-components=1 && rm /tmp/novnc.tgz
 
 # --- Let Firefox reach the BMCs' ancient TLS (for clicking the web UI) ------
 RUN FF=/etc/firefox-esr && mkdir -p $FF && \

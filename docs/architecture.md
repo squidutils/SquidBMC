@@ -162,9 +162,9 @@ The awkward details, written down so a rebuild never turns into archaeology:
   reach the login prompt as stray characters.
 - **One Xvnc display per BMC** gives each console total isolation.
 
-The engine image also contains Debian's `novnc` and `websockify` packages and a
-copy of noVNC 1.1.0 in `/opt/novnc`. `start.sh` does not start them; the
-browser-facing noVNC is the 1.4 copy in the `web` container.
+The engine image contains no noVNC or websockify. The browser-facing noVNC is
+the 1.4 copy in the `web` container, and `web`'s own WebSocket proxy connects
+straight to the engine's Xvnc ports.
 
 ## Ports
 
